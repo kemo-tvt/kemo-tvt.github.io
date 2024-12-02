@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build the project 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repo
@@ -37,7 +37,7 @@ jobs:
         id: deployment
         uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
         with:
-          path: dist/
+          path: build/
 
   # Deployment job
   deploy:
