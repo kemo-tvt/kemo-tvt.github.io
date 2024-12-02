@@ -326,16 +326,16 @@ function to_list(items) {
     }
   );
 }
-let Some$1 = class Some extends CustomType {
+class Some extends CustomType {
   constructor(x0) {
     super();
     this[0] = x0;
   }
-};
+}
 class None extends CustomType {
 }
 function to_result(option, e) {
-  if (option instanceof Some$1) {
+  if (option instanceof Some) {
     let a = option[0];
     return new Ok(a);
   } else {
@@ -343,320 +343,28 @@ function to_result(option, e) {
   }
 }
 function unwrap(option, default$) {
-  if (option instanceof Some$1) {
+  if (option instanceof Some) {
     let x = option[0];
     return x;
   } else {
     return default$;
   }
 }
-function map$3(option, fun) {
-  if (option instanceof Some$1) {
+function lazy_unwrap$1(option, default$) {
+  if (option instanceof Some) {
     let x = option[0];
-    return new Some$1(fun(x));
+    return x;
+  } else {
+    return default$();
+  }
+}
+function map$2(option, fun) {
+  if (option instanceof Some) {
+    let x = option[0];
+    return new Some(fun(x));
   } else {
     return new None();
   }
-}
-function new$$1() {
-  return new_map();
-}
-function get$1(from2, get2) {
-  return map_get(from2, get2);
-}
-function insert(dict, key, value2) {
-  return map_insert(key, value2, dict);
-}
-function reverse_and_concat(loop$remaining, loop$accumulator) {
-  while (true) {
-    let remaining = loop$remaining;
-    let accumulator = loop$accumulator;
-    if (remaining.hasLength(0)) {
-      return accumulator;
-    } else {
-      let item = remaining.head;
-      let rest = remaining.tail;
-      loop$remaining = rest;
-      loop$accumulator = prepend$1(item, accumulator);
-    }
-  }
-}
-function do_values_loop(loop$list, loop$acc) {
-  while (true) {
-    let list = loop$list;
-    let acc = loop$acc;
-    if (list.hasLength(0)) {
-      return reverse_and_concat(acc, toList([]));
-    } else {
-      let first2 = list.head;
-      let rest = list.tail;
-      loop$list = rest;
-      loop$acc = prepend$1(first2[1], acc);
-    }
-  }
-}
-function do_values(dict) {
-  let list_of_pairs = map_to_list(dict);
-  return do_values_loop(list_of_pairs, toList([]));
-}
-function values(dict) {
-  return do_values(dict);
-}
-function first(pair) {
-  let a = pair[0];
-  return a;
-}
-function second(pair) {
-  let a = pair[1];
-  return a;
-}
-function map_first(pair, fun) {
-  let a = pair[0];
-  let b = pair[1];
-  return [fun(a), b];
-}
-function map_second(pair, fun) {
-  let a = pair[0];
-  let b = pair[1];
-  return [a, fun(b)];
-}
-function new$(first2, second2) {
-  return [first2, second2];
-}
-function reverse_loop$1(loop$remaining, loop$accumulator) {
-  while (true) {
-    let remaining = loop$remaining;
-    let accumulator = loop$accumulator;
-    if (remaining.hasLength(0)) {
-      return accumulator;
-    } else {
-      let item = remaining.head;
-      let rest$1 = remaining.tail;
-      loop$remaining = rest$1;
-      loop$accumulator = prepend$1(item, accumulator);
-    }
-  }
-}
-function reverse$1(list) {
-  return reverse_loop$1(list, toList([]));
-}
-function is_empty(list) {
-  return isEqual(list, toList([]));
-}
-function map_loop$1(loop$list, loop$fun, loop$acc) {
-  while (true) {
-    let list = loop$list;
-    let fun = loop$fun;
-    let acc = loop$acc;
-    if (list.hasLength(0)) {
-      return reverse$1(acc);
-    } else {
-      let first$1 = list.head;
-      let rest$1 = list.tail;
-      loop$list = rest$1;
-      loop$fun = fun;
-      loop$acc = prepend$1(fun(first$1), acc);
-    }
-  }
-}
-function map$2(list, fun) {
-  return map_loop$1(list, fun, toList([]));
-}
-function append_loop(loop$first, loop$second) {
-  while (true) {
-    let first2 = loop$first;
-    let second2 = loop$second;
-    if (first2.hasLength(0)) {
-      return second2;
-    } else {
-      let item = first2.head;
-      let rest$1 = first2.tail;
-      loop$first = rest$1;
-      loop$second = prepend$1(item, second2);
-    }
-  }
-}
-function append$2(first2, second2) {
-  return append_loop(reverse$1(first2), second2);
-}
-function prepend(list, item) {
-  return prepend$1(item, list);
-}
-function reverse_and_prepend(loop$prefix, loop$suffix) {
-  while (true) {
-    let prefix = loop$prefix;
-    let suffix = loop$suffix;
-    if (prefix.hasLength(0)) {
-      return suffix;
-    } else {
-      let first$1 = prefix.head;
-      let rest$1 = prefix.tail;
-      loop$prefix = rest$1;
-      loop$suffix = prepend$1(first$1, suffix);
-    }
-  }
-}
-function concat_loop(loop$lists, loop$acc) {
-  while (true) {
-    let lists = loop$lists;
-    let acc = loop$acc;
-    if (lists.hasLength(0)) {
-      return reverse$1(acc);
-    } else {
-      let list = lists.head;
-      let further_lists = lists.tail;
-      loop$lists = further_lists;
-      loop$acc = reverse_and_prepend(list, acc);
-    }
-  }
-}
-function flatten(lists) {
-  return concat_loop(lists, toList([]));
-}
-function flat_map(list, fun) {
-  let _pipe = map$2(list, fun);
-  return flatten(_pipe);
-}
-function fold(loop$list, loop$initial, loop$fun) {
-  while (true) {
-    let list = loop$list;
-    let initial = loop$initial;
-    let fun = loop$fun;
-    if (list.hasLength(0)) {
-      return initial;
-    } else {
-      let x = list.head;
-      let rest$1 = list.tail;
-      loop$list = rest$1;
-      loop$initial = fun(initial, x);
-      loop$fun = fun;
-    }
-  }
-}
-function map$1(result, fun) {
-  if (result.isOk()) {
-    let x = result[0];
-    return new Ok(fun(x));
-  } else {
-    let e = result[0];
-    return new Error2(e);
-  }
-}
-function map_error(result, fun) {
-  if (result.isOk()) {
-    let x = result[0];
-    return new Ok(x);
-  } else {
-    let error = result[0];
-    return new Error2(fun(error));
-  }
-}
-function try$(result, fun) {
-  if (result.isOk()) {
-    let x = result[0];
-    return fun(x);
-  } else {
-    let e = result[0];
-    return new Error2(e);
-  }
-}
-function append_tree(tree, suffix) {
-  return add(tree, suffix);
-}
-function from_strings(strings) {
-  return concat(strings);
-}
-function from_string(string2) {
-  return identity(string2);
-}
-function append$1(tree, second2) {
-  return append_tree(tree, from_string(second2));
-}
-function to_string$4(tree) {
-  return identity(tree);
-}
-class DecodeError extends CustomType {
-  constructor(expected, found, path) {
-    super();
-    this.expected = expected;
-    this.found = found;
-    this.path = path;
-  }
-}
-function classify(data) {
-  return classify_dynamic(data);
-}
-function int(data) {
-  return decode_int(data);
-}
-function any(decoders) {
-  return (data) => {
-    if (decoders.hasLength(0)) {
-      return new Error2(
-        toList([new DecodeError("another type", classify(data), toList([]))])
-      );
-    } else {
-      let decoder = decoders.head;
-      let decoders$1 = decoders.tail;
-      let $ = decoder(data);
-      if ($.isOk()) {
-        let decoded = $[0];
-        return new Ok(decoded);
-      } else {
-        return any(decoders$1)(data);
-      }
-    }
-  };
-}
-function push_path(error, name) {
-  let name$1 = identity(name);
-  let decoder = any(
-    toList([string, (x) => {
-      return map$1(int(x), to_string$1);
-    }])
-  );
-  let name$2 = (() => {
-    let $ = decoder(name$1);
-    if ($.isOk()) {
-      let name$22 = $[0];
-      return name$22;
-    } else {
-      let _pipe = toList(["<", classify(name$1), ">"]);
-      let _pipe$1 = from_strings(_pipe);
-      return to_string$4(_pipe$1);
-    }
-  })();
-  return error.withFields({ path: prepend$1(name$2, error.path) });
-}
-function map_errors(result, f) {
-  return map_error(
-    result,
-    (_capture) => {
-      return map$2(_capture, f);
-    }
-  );
-}
-function string(data) {
-  return decode_string(data);
-}
-function field(name, inner_type) {
-  return (value2) => {
-    let missing_field_error = new DecodeError("field", "nothing", toList([]));
-    return try$(
-      decode_field(value2, name),
-      (maybe_inner) => {
-        let _pipe = maybe_inner;
-        let _pipe$1 = to_result(_pipe, toList([missing_field_error]));
-        let _pipe$2 = try$(_pipe$1, inner_type);
-        return map_errors(
-          _pipe$2,
-          (_capture) => {
-            return push_path(_capture, name);
-          }
-        );
-      }
-    );
-  };
 }
 const referenceMap = /* @__PURE__ */ new WeakMap();
 const tempDataView = new DataView(new ArrayBuffer(8));
@@ -1354,7 +1062,7 @@ const NOT_FOUND = {};
 function identity(x) {
   return x;
 }
-function to_string$3(term) {
+function to_string$4(term) {
   return term.toString();
 }
 function float_to_string(float) {
@@ -1452,7 +1160,7 @@ function decode_field(value2, name) {
   const not_a_map_error = () => decoder_error("Dict", value2);
   if (value2 instanceof Dict || value2 instanceof WeakMap || value2 instanceof Map) {
     const entry = map_get(value2, name);
-    return new Ok(entry.isOk() ? new Some$1(entry[0]) : new None());
+    return new Ok(entry.isOk() ? new Some(entry[0]) : new None());
   } else if (value2 === null) {
     return not_a_map_error();
   } else if (Object.getPrototypeOf(value2) == Object.prototype) {
@@ -1463,7 +1171,7 @@ function decode_field(value2, name) {
 }
 function try_get_field(value2, field2, or_else) {
   try {
-    return field2 in value2 ? new Ok(new Some$1(value2[field2])) : or_else();
+    return field2 in value2 ? new Ok(new Some(value2[field2])) : or_else();
   } catch {
     return or_else();
   }
@@ -1565,45 +1273,79 @@ function inspectBitArray(bits) {
 function inspectUtfCodepoint(codepoint) {
   return `//utfcodepoint(${String.fromCodePoint(codepoint.value)})`;
 }
-function to_string$2(x) {
+function to_string$3(x) {
   return float_to_string(x);
 }
-function to_string$1(x) {
-  return to_string$3(x);
+function to_string$2(x) {
+  return to_string$4(x);
 }
 function to_float(x) {
   return identity(x);
 }
-function append(first2, second2) {
-  let _pipe = first2;
-  let _pipe$1 = from_string(_pipe);
-  let _pipe$2 = append$1(_pipe$1, second2);
-  return to_string$4(_pipe$2);
+function new$$1() {
+  return new_map();
 }
-function repeat_loop(loop$string, loop$times, loop$acc) {
+function get$1(from2, get2) {
+  return map_get(from2, get2);
+}
+function insert(dict, key, value2) {
+  return map_insert(key, value2, dict);
+}
+function reverse_and_concat(loop$remaining, loop$accumulator) {
   while (true) {
-    let string2 = loop$string;
-    let times = loop$times;
-    let acc = loop$acc;
-    let $ = times <= 0;
-    if ($) {
-      return acc;
+    let remaining = loop$remaining;
+    let accumulator = loop$accumulator;
+    if (remaining.hasLength(0)) {
+      return accumulator;
     } else {
-      loop$string = string2;
-      loop$times = times - 1;
-      loop$acc = acc + string2;
+      let item = remaining.head;
+      let rest = remaining.tail;
+      loop$remaining = rest;
+      loop$accumulator = prepend$1(item, accumulator);
     }
   }
 }
-function repeat(string2, times) {
-  return repeat_loop(string2, times, "");
+function do_values_loop(loop$list, loop$acc) {
+  while (true) {
+    let list = loop$list;
+    let acc = loop$acc;
+    if (list.hasLength(0)) {
+      return reverse_and_concat(acc, toList([]));
+    } else {
+      let first2 = list.head;
+      let rest = list.tail;
+      loop$list = rest;
+      loop$acc = prepend$1(first2[1], acc);
+    }
+  }
 }
-function join(strings, separator) {
-  return join$1(strings, separator);
+function do_values(dict) {
+  let list_of_pairs = map_to_list(dict);
+  return do_values_loop(list_of_pairs, toList([]));
 }
-function inspect(term) {
-  let _pipe = inspect$1(term);
-  return to_string$4(_pipe);
+function values(dict) {
+  return do_values(dict);
+}
+function first(pair) {
+  let a = pair[0];
+  return a;
+}
+function second(pair) {
+  let a = pair[1];
+  return a;
+}
+function map_first(pair, fun) {
+  let a = pair[0];
+  let b = pair[1];
+  return [fun(a), b];
+}
+function map_second(pair, fun) {
+  let a = pair[0];
+  let b = pair[1];
+  return [a, fun(b)];
+}
+function new$(first2, second2) {
+  return [first2, second2];
 }
 function reverse_loop(loop$remaining, loop$accumulator) {
   while (true) {
@@ -1621,6 +1363,9 @@ function reverse_loop(loop$remaining, loop$accumulator) {
 }
 function reverse(list) {
   return reverse_loop(list, toList([]));
+}
+function is_empty(list) {
+  return isEqual(list, toList([]));
 }
 function filter_loop(loop$list, loop$fun, loop$acc) {
   while (true) {
@@ -1665,21 +1410,151 @@ function map_loop(loop$list, loop$fun, loop$acc) {
     }
   }
 }
-function map(list, fun) {
+function map$1(list, fun) {
   return map_loop(list, fun, toList([]));
 }
-class Some2 extends CustomType {
-  constructor(x0) {
-    super();
-    this[0] = x0;
+function append_loop(loop$first, loop$second) {
+  while (true) {
+    let first2 = loop$first;
+    let second2 = loop$second;
+    if (first2.hasLength(0)) {
+      return second2;
+    } else {
+      let item = first2.head;
+      let rest$1 = first2.tail;
+      loop$first = rest$1;
+      loop$second = prepend$1(item, second2);
+    }
   }
 }
-function lazy_unwrap$1(option, default$) {
-  if (option instanceof Some2) {
-    let x = option[0];
-    return x;
+function append$2(first2, second2) {
+  return append_loop(reverse(first2), second2);
+}
+function prepend(list, item) {
+  return prepend$1(item, list);
+}
+function reverse_and_prepend(loop$prefix, loop$suffix) {
+  while (true) {
+    let prefix = loop$prefix;
+    let suffix = loop$suffix;
+    if (prefix.hasLength(0)) {
+      return suffix;
+    } else {
+      let first$1 = prefix.head;
+      let rest$1 = prefix.tail;
+      loop$prefix = rest$1;
+      loop$suffix = prepend$1(first$1, suffix);
+    }
+  }
+}
+function concat_loop(loop$lists, loop$acc) {
+  while (true) {
+    let lists = loop$lists;
+    let acc = loop$acc;
+    if (lists.hasLength(0)) {
+      return reverse(acc);
+    } else {
+      let list = lists.head;
+      let further_lists = lists.tail;
+      loop$lists = further_lists;
+      loop$acc = reverse_and_prepend(list, acc);
+    }
+  }
+}
+function flatten(lists) {
+  return concat_loop(lists, toList([]));
+}
+function flat_map(list, fun) {
+  let _pipe = map$1(list, fun);
+  return flatten(_pipe);
+}
+function fold(loop$list, loop$initial, loop$fun) {
+  while (true) {
+    let list = loop$list;
+    let initial = loop$initial;
+    let fun = loop$fun;
+    if (list.hasLength(0)) {
+      return initial;
+    } else {
+      let x = list.head;
+      let rest$1 = list.tail;
+      loop$list = rest$1;
+      loop$initial = fun(initial, x);
+      loop$fun = fun;
+    }
+  }
+}
+function append_tree(tree, suffix) {
+  return add(tree, suffix);
+}
+function from_strings(strings) {
+  return concat(strings);
+}
+function from_string(string2) {
+  return identity(string2);
+}
+function append$1(tree, second2) {
+  return append_tree(tree, from_string(second2));
+}
+function to_string$1(tree) {
+  return identity(tree);
+}
+function append(first2, second2) {
+  let _pipe = first2;
+  let _pipe$1 = from_string(_pipe);
+  let _pipe$2 = append$1(_pipe$1, second2);
+  return to_string$1(_pipe$2);
+}
+function repeat_loop(loop$string, loop$times, loop$acc) {
+  while (true) {
+    let string2 = loop$string;
+    let times = loop$times;
+    let acc = loop$acc;
+    let $ = times <= 0;
+    if ($) {
+      return acc;
+    } else {
+      loop$string = string2;
+      loop$times = times - 1;
+      loop$acc = acc + string2;
+    }
+  }
+}
+function repeat(string2, times) {
+  return repeat_loop(string2, times, "");
+}
+function join(strings, separator) {
+  return join$1(strings, separator);
+}
+function inspect(term) {
+  let _pipe = inspect$1(term);
+  return to_string$1(_pipe);
+}
+function map(result, fun) {
+  if (result.isOk()) {
+    let x = result[0];
+    return new Ok(fun(x));
   } else {
-    return default$();
+    let e = result[0];
+    return new Error2(e);
+  }
+}
+function map_error(result, fun) {
+  if (result.isOk()) {
+    let x = result[0];
+    return new Ok(x);
+  } else {
+    let error = result[0];
+    return new Error2(fun(error));
+  }
+}
+function try$(result, fun) {
+  if (result.isOk()) {
+    let x = result[0];
+    return fun(x);
+  } else {
+    let e = result[0];
+    return new Error2(e);
   }
 }
 function lazy_unwrap(result, default$) {
@@ -1690,6 +1565,89 @@ function lazy_unwrap(result, default$) {
     return default$();
   }
 }
+class DecodeError extends CustomType {
+  constructor(expected, found, path) {
+    super();
+    this.expected = expected;
+    this.found = found;
+    this.path = path;
+  }
+}
+function classify(data) {
+  return classify_dynamic(data);
+}
+function int(data) {
+  return decode_int(data);
+}
+function any(decoders) {
+  return (data) => {
+    if (decoders.hasLength(0)) {
+      return new Error2(
+        toList([new DecodeError("another type", classify(data), toList([]))])
+      );
+    } else {
+      let decoder = decoders.head;
+      let decoders$1 = decoders.tail;
+      let $ = decoder(data);
+      if ($.isOk()) {
+        let decoded = $[0];
+        return new Ok(decoded);
+      } else {
+        return any(decoders$1)(data);
+      }
+    }
+  };
+}
+function push_path(error, name) {
+  let name$1 = identity(name);
+  let decoder = any(
+    toList([string, (x) => {
+      return map(int(x), to_string$2);
+    }])
+  );
+  let name$2 = (() => {
+    let $ = decoder(name$1);
+    if ($.isOk()) {
+      let name$22 = $[0];
+      return name$22;
+    } else {
+      let _pipe = toList(["<", classify(name$1), ">"]);
+      let _pipe$1 = from_strings(_pipe);
+      return to_string$1(_pipe$1);
+    }
+  })();
+  return error.withFields({ path: prepend$1(name$2, error.path) });
+}
+function map_errors(result, f) {
+  return map_error(
+    result,
+    (_capture) => {
+      return map$1(_capture, f);
+    }
+  );
+}
+function string(data) {
+  return decode_string(data);
+}
+function field(name, inner_type) {
+  return (value2) => {
+    let missing_field_error = new DecodeError("field", "nothing", toList([]));
+    return try$(
+      decode_field(value2, name),
+      (maybe_inner) => {
+        let _pipe = maybe_inner;
+        let _pipe$1 = to_result(_pipe, toList([missing_field_error]));
+        let _pipe$2 = try$(_pipe$1, inner_type);
+        return map_errors(
+          _pipe$2,
+          (_capture) => {
+            return push_path(_capture, name);
+          }
+        );
+      }
+    );
+  };
+}
 function guard(requirement, consequence, alternative) {
   if (requirement) {
     return consequence;
@@ -1697,13 +1655,36 @@ function guard(requirement, consequence, alternative) {
     return alternative();
   }
 }
+class Effect extends CustomType {
+  constructor(all) {
+    super();
+    this.all = all;
+  }
+}
+function custom(run) {
+  return new Effect(
+    toList([
+      (actions) => {
+        return run(actions.dispatch, actions.emit, actions.select, actions.root);
+      }
+    ])
+  );
+}
+function from(effect) {
+  return custom((dispatch, _, _1, _2) => {
+    return effect(dispatch);
+  });
+}
+function none$1() {
+  return new Effect(toList([]));
+}
 let Text$1 = class Text extends CustomType {
   constructor(content) {
     super();
     this.content = content;
   }
 };
-let Element$2 = class Element extends CustomType {
+let Element$1 = class Element extends CustomType {
   constructor(key, namespace, tag, attrs, children2, self_closing, void$) {
     super();
     this.key = key;
@@ -1730,14 +1711,14 @@ class Event extends CustomType {
     this[1] = x1;
   }
 }
-function attribute$1(name, value2) {
+function attribute(name, value2) {
   return new Attribute(name, identity(value2), false);
 }
 function on$1(name, handler) {
   return new Event("on" + name, handler);
 }
 function style(properties) {
-  return attribute$1(
+  return attribute(
     "style",
     fold(
       properties,
@@ -1751,45 +1732,51 @@ function style(properties) {
   );
 }
 function class$$2(name) {
-  return attribute$1("class", name);
+  return attribute("class", name);
+}
+function type_(name) {
+  return attribute("type", name);
+}
+function value$1(val) {
+  return attribute("value", val);
 }
 function element$1(tag, attrs, children2) {
   if (tag === "area") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "base") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "br") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "col") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "embed") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "hr") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "img") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "input") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "link") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "meta") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "param") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "source") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "track") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else if (tag === "wbr") {
-    return new Element$2("", "", tag, attrs, toList([]), false, true);
+    return new Element$1("", "", tag, attrs, toList([]), false, true);
   } else {
-    return new Element$2("", "", tag, attrs, children2, false, false);
+    return new Element$1("", "", tag, attrs, children2, false, false);
   }
 }
 function text$2(content) {
   return new Text$1(content);
 }
-function none$1() {
+function none() {
   return new Text$1("");
 }
 function fragment$1(elements) {
@@ -1826,14 +1813,6 @@ class ForceModel extends CustomType {
     this[0] = x0;
   }
 }
-class ElementNotFound extends CustomType {
-  constructor(selector) {
-    super();
-    this.selector = selector;
-  }
-}
-let NotABrowser$1 = class NotABrowser extends CustomType {
-};
 if (window && window.customElements) {
   window.customElements.define(
     "lustre-fragment",
@@ -2159,7 +2138,7 @@ const _LustreClientApplication = class _LustreClientApplication {
    * @returns {Gleam.Ok<(action: Lustre.Action<Lustre.Client, Msg>>) => void>}
    */
   static start({ init: init2, update: update2, view: view2 }, selector, flags) {
-    if (!is_browser()) return new Error2(new NotABrowser$1());
+    if (!is_browser()) return new Error2(new NotABrowser());
     const root = selector instanceof HTMLElement ? selector : document.querySelector(selector);
     if (!root) return new Error2(new ElementNotFound(selector));
     const app = new _LustreClientApplication(root, init2(flags), update2, view2);
@@ -2282,7 +2261,13 @@ class App extends CustomType {
     this.on_attribute_change = on_attribute_change;
   }
 }
-class NotABrowser2 extends CustomType {
+class ElementNotFound extends CustomType {
+  constructor(selector) {
+    super();
+    this.selector = selector;
+  }
+}
+class NotABrowser extends CustomType {
 }
 function application(init2, update2, view2) {
   return new App(init2, update2, view2, new None());
@@ -2290,43 +2275,11 @@ function application(init2, update2, view2) {
 function start(app, selector, flags) {
   return guard(
     !is_browser(),
-    new Error2(new NotABrowser2()),
+    new Error2(new NotABrowser()),
     () => {
       return start$1(app, selector, flags);
     }
   );
-}
-function attribute(name, value2) {
-  return new Attribute(name, identity(value2), false);
-}
-function type_(name) {
-  return attribute("type", name);
-}
-function value$1(val) {
-  return attribute("value", val);
-}
-class Effect extends CustomType {
-  constructor(all) {
-    super();
-    this.all = all;
-  }
-}
-function custom(run) {
-  return new Effect(
-    toList([
-      (actions) => {
-        return run(actions.dispatch, actions.emit, actions.select, actions.root);
-      }
-    ])
-  );
-}
-function from(effect) {
-  return custom((dispatch, _, _1, _2) => {
-    return effect(dispatch);
-  });
-}
-function none() {
-  return new Effect(toList([]));
 }
 function on(name, handler) {
   return on$1(name, handler);
@@ -2347,7 +2300,7 @@ function on_input(msg) {
     "input",
     (event) => {
       let _pipe = value(event);
-      return map$1(_pipe, msg);
+      return map(_pipe, msg);
     }
   );
 }
@@ -2656,14 +2609,14 @@ function handle_property(props, style2) {
   return props.withFields({ properties });
 }
 function wrap_pseudo_selectors(id, indent2, pseudo_selectors) {
-  return map$2(
+  return map$1(
     pseudo_selectors,
     (p) => {
       return wrap_class(
         id,
         p.properties,
         indent2,
-        new Some$1(p.pseudo_selector)
+        new Some(p.pseudo_selector)
       );
     }
   );
@@ -2678,7 +2631,7 @@ function compute_classes(class_name2, computed_properties) {
     0,
     new None()
   );
-  let medias_def = map$2(
+  let medias_def = map$1(
     medias,
     (_use0) => {
       let query = _use0.query;
@@ -2763,7 +2716,7 @@ function handle_media(cache2, props, style2) {
 function compute_properties(cache2, properties, indent2) {
   let init2 = init_computed_properties(indent2);
   return fold(
-    reverse$1(properties),
+    reverse(properties),
     [cache2, init2],
     (_use0, prop) => {
       let cache$1 = _use0[0];
@@ -2839,7 +2792,7 @@ function compute_class(cache2, class$2) {
       return cid;
     }
   })();
-  let class_name$12 = "css-" + to_string$1(class_id);
+  let class_name$12 = "css-" + to_string$2(class_id);
   let _pipe = compute_classes(class_name$12, properties);
   let _pipe$1 = ((c) => {
     return create(
@@ -2913,12 +2866,12 @@ class Em extends CustomType {
     this[0] = x0;
   }
 }
-let Rem$1 = class Rem extends CustomType {
+class Rem extends CustomType {
   constructor(x0) {
     super();
     this[0] = x0;
   }
-};
+}
 class Lh extends CustomType {
   constructor(x0) {
     super();
@@ -2931,63 +2884,100 @@ class Rlh extends CustomType {
     this[0] = x0;
   }
 }
-let Pct$1 = class Pct extends CustomType {
+class Pct extends CustomType {
   constructor(x0) {
     super();
     this[0] = x0;
   }
-};
+}
+function percent(value2) {
+  return new Pct(to_float(value2));
+}
+function rem(value2) {
+  return new Rem(value2);
+}
 function to_string(size) {
   if (size instanceof Px) {
     let value2 = size[0];
-    return append(to_string$2(value2), "px");
+    return append(to_string$3(value2), "px");
   } else if (size instanceof Pt) {
     let value2 = size[0];
-    return append(to_string$2(value2), "pt");
-  } else if (size instanceof Pct$1) {
+    return append(to_string$3(value2), "pt");
+  } else if (size instanceof Pct) {
     let value2 = size[0];
-    return append(to_string$2(value2), "%");
+    return append(to_string$3(value2), "%");
   } else if (size instanceof Vh) {
     let value2 = size[0];
-    return append(to_string$2(value2), "vh");
+    return append(to_string$3(value2), "vh");
   } else if (size instanceof Vw) {
     let value2 = size[0];
-    return append(to_string$2(value2), "vw");
+    return append(to_string$3(value2), "vw");
   } else if (size instanceof Em) {
     let value2 = size[0];
-    return append(to_string$2(value2), "em");
-  } else if (size instanceof Rem$1) {
+    return append(to_string$3(value2), "em");
+  } else if (size instanceof Rem) {
     let value2 = size[0];
-    return append(to_string$2(value2), "rem");
+    return append(to_string$3(value2), "rem");
   } else if (size instanceof Lh) {
     let value2 = size[0];
-    return append(to_string$2(value2), "lh");
+    return append(to_string$3(value2), "lh");
   } else if (size instanceof Rlh) {
     let value2 = size[0];
-    return append(to_string$2(value2), "rlh");
+    return append(to_string$3(value2), "rlh");
   } else {
     let value2 = size[0];
-    return append(to_string$2(value2), "ch");
+    return append(to_string$3(value2), "ch");
   }
 }
-let JsCache$1 = class JsCache extends CustomType {
+class JsCache extends CustomType {
   constructor(cache2) {
     super();
     this.cache = cache2;
   }
-};
+}
 class Ephemeral extends CustomType {
 }
 function class$(styles) {
   return class$$1(styles);
 }
+function render(cache2) {
+  if (!(cache2 instanceof JsCache)) {
+    throw makeError(
+      "let_assert",
+      "sketch",
+      38,
+      "render",
+      "Pattern match failed, no pattern matched the value.",
+      { value: cache2 }
+    );
+  }
+  let cache$1 = cache2.cache;
+  return render$1(cache$1);
+}
+function class_name(class$2, cache2) {
+  if (!(cache2 instanceof JsCache)) {
+    throw makeError(
+      "let_assert",
+      "sketch",
+      53,
+      "class_name",
+      "Pattern match failed, no pattern matched the value.",
+      { value: cache2 }
+    );
+  }
+  let c = cache2.cache;
+  let _pipe = class_name$1(class$2, c);
+  return map_first(_pipe, (var0) => {
+    return new JsCache(var0);
+  });
+}
 function cache(strategy) {
   return new Ok(
     (() => {
       if (strategy instanceof Ephemeral) {
-        return new JsCache$1(ephemeral());
+        return new JsCache(ephemeral());
       } else {
-        return new JsCache$1(persistent());
+        return new JsCache(persistent());
       }
     })()
   );
@@ -3023,7 +3013,7 @@ function flex_direction(flex_direction2) {
   return property("flex-direction", flex_direction2);
 }
 function flex_shrink(flex_shrink2) {
-  return property("flex-shrink", to_string$2(flex_shrink2));
+  return property("flex-shrink", to_string$3(flex_shrink2));
 }
 function font_size(font_size2) {
   return property("font-size", to_string(font_size2));
@@ -3094,61 +3084,6 @@ function hover(styles) {
 function focus(styles) {
   return pseudo_selector(":focus", styles);
 }
-class Rem2 extends CustomType {
-  constructor(x0) {
-    super();
-    this[0] = x0;
-  }
-}
-class Pct2 extends CustomType {
-  constructor(x0) {
-    super();
-    this[0] = x0;
-  }
-}
-function percent(value2) {
-  return new Pct2(to_float(value2));
-}
-function rem(value2) {
-  return new Rem2(value2);
-}
-class JsCache2 extends CustomType {
-  constructor(cache2) {
-    super();
-    this.cache = cache2;
-  }
-}
-function render(cache2) {
-  if (!(cache2 instanceof JsCache2)) {
-    throw makeError(
-      "let_assert",
-      "sketch",
-      38,
-      "render",
-      "Pattern match failed, no pattern matched the value.",
-      { value: cache2 }
-    );
-  }
-  let cache$1 = cache2.cache;
-  return render$1(cache$1);
-}
-function class_name(class$2, cache2) {
-  if (!(cache2 instanceof JsCache2)) {
-    throw makeError(
-      "let_assert",
-      "sketch",
-      53,
-      "class_name",
-      "Pattern match failed, no pattern matched the value.",
-      { value: cache2 }
-    );
-  }
-  let c = cache2.cache;
-  let _pipe = class_name$1(class$2, c);
-  return map_first(_pipe, (var0) => {
-    return new JsCache2(var0);
-  });
-}
 function wrap(current) {
   if (isPersistent(current)) return { current };
   return current;
@@ -3191,7 +3126,7 @@ let Map$1 = class Map2 extends CustomType {
     this.subtree = subtree;
   }
 };
-let Element$1 = class Element2 extends CustomType {
+class Element2 extends CustomType {
   constructor(key, namespace, tag, class$2, attributes, children2) {
     super();
     this.key = key;
@@ -3201,17 +3136,28 @@ let Element$1 = class Element2 extends CustomType {
     this.attributes = attributes;
     this.children = children2;
   }
-};
+}
 function text$1(content) {
   return new Text2(content);
 }
 function element(tag, class$2, attributes, children2) {
-  let class$1 = new Some$1(class$2);
-  return new Element$1("", "", tag, class$1, attributes, children2);
+  let class$1 = new Some(class$2);
+  return new Element2("", "", tag, class$1, attributes, children2);
+}
+function fragment(children2) {
+  let attrs = toList([style(toList([["display", "contents"]]))]);
+  return new Element2(
+    "",
+    "",
+    "lustre-fragment",
+    new None(),
+    attrs,
+    children2
+  );
 }
 function unstyled_children(cache2, children2) {
   return fold(
-    reverse$1(children2),
+    reverse(children2),
     [cache2, toList([])],
     (acc, child) => {
       let cache$1 = acc[0];
@@ -3228,7 +3174,7 @@ function unstyled(loop$cache, loop$element) {
     let cache2 = loop$cache;
     let element2 = loop$element;
     if (element2 instanceof Nothing) {
-      return [cache2, none$1()];
+      return [cache2, none()];
     } else if (element2 instanceof Text2) {
       let content = element2.content;
       return [cache2, text$2(content)];
@@ -3243,15 +3189,15 @@ function unstyled(loop$cache, loop$element) {
       let class$2 = element2.class;
       let attributes = element2.attributes;
       let children2 = element2.children;
-      let class$1 = map$3(
+      let class$1 = map$2(
         class$2,
         (_capture) => {
           return class_name(_capture, cache2);
         }
       );
-      let class_name$12 = map$3(class$1, second);
+      let class_name$12 = map$2(class$1, second);
       let cache$1 = (() => {
-        let _pipe = map$3(class$1, first);
+        let _pipe = map$2(class$1, first);
         return unwrap(_pipe, cache2);
       })();
       let $ = unstyled_children(cache$1, children2);
@@ -3270,13 +3216,13 @@ function unstyled(loop$cache, loop$element) {
         cache$2,
         (() => {
           let $1 = element$1(tag, attributes$1, children$1);
-          if ($1 instanceof Element$2) {
+          if ($1 instanceof Element$1) {
             let t = $1.tag;
             let a = $1.attrs;
             let c = $1.children;
             let s = $1.self_closing;
             let v = $1.void;
-            return new Element$2(key, namespace, t, a, c, s, v);
+            return new Element$1(key, namespace, t, a, c, s, v);
           } else {
             let e = $1;
             return e;
@@ -3316,7 +3262,7 @@ function to_stylesheet(options) {
 }
 function render_stylesheet(content, node2, stylesheet) {
   if (stylesheet instanceof NodeStyleSheet) {
-    if (node2 instanceof Element$2 && node2.tag === "lustre-fragment") {
+    if (node2 instanceof Element$1 && node2.tag === "lustre-fragment") {
       let children2 = node2.children;
       return fragment$1(
         prepend$1(
@@ -3353,28 +3299,6 @@ function compose(options, view2, cache2) {
 }
 function node() {
   return new Options(new Node$1());
-}
-class Element3 extends CustomType {
-  constructor(key, namespace, tag, class$2, attributes, children2) {
-    super();
-    this.key = key;
-    this.namespace = namespace;
-    this.tag = tag;
-    this.class = class$2;
-    this.attributes = attributes;
-    this.children = children2;
-  }
-}
-function fragment(children2) {
-  let attrs = toList([style(toList([["display", "contents"]]))]);
-  return new Element3(
-    "",
-    "",
-    "lustre-fragment",
-    new None(),
-    attrs,
-    children2
-  );
 }
 function text(content) {
   return text$1(content);
@@ -3449,9 +3373,9 @@ function write_localstorage(key, value2) {
 function init(_) {
   return [
     new Model(
-      new Some2(toList([])),
-      new Some2(toList([])),
-      new Some2(toList([])),
+      new Some(toList([])),
+      new Some(toList([])),
+      new Some(toList([])),
       ""
     ),
     read_localstorage("kanban")
@@ -3462,7 +3386,7 @@ function update(model, msg) {
     let kanban = msg[0][0];
     return [
       model.withFields({
-        to_do: new Some2(
+        to_do: new Some(
           (() => {
             let _pipe = kanban;
             let _pipe$1 = index$1(_pipe, 0);
@@ -3475,7 +3399,7 @@ function update(model, msg) {
             return to_list(_pipe$2);
           })()
         ),
-        in_progress: new Some2(
+        in_progress: new Some(
           (() => {
             let _pipe = kanban;
             let _pipe$1 = index$1(_pipe, 1);
@@ -3488,7 +3412,7 @@ function update(model, msg) {
             return to_list(_pipe$2);
           })()
         ),
-        done: new Some2(
+        done: new Some(
           (() => {
             let _pipe = kanban;
             let _pipe$1 = index$1(_pipe, 2);
@@ -3502,13 +3426,13 @@ function update(model, msg) {
           })()
         )
       }),
-      none()
+      none$1()
     ];
   } else if (msg instanceof CacheUpdatedMessage && !msg[0].isOk()) {
-    return [model, none()];
+    return [model, none$1()];
   } else if (msg instanceof UpdateNewTask) {
     let value2 = msg[0];
-    return [model.withFields({ new_task_input: value2 }), none()];
+    return [model.withFields({ new_task_input: value2 }), none$1()];
   } else if (msg instanceof DeleteTask) {
     let kanban_block$1 = msg[0];
     let task$1 = msg[1];
@@ -3523,8 +3447,8 @@ function update(model, msg) {
         });
       })();
       let added_tasks = (() => {
-        let _pipe = toList([new Some2(tasks), model.in_progress, model.done]);
-        let _pipe$1 = map(
+        let _pipe = toList([new Some(tasks), model.in_progress, model.done]);
+        let _pipe$1 = map$1(
           _pipe,
           (x) => {
             let _pipe$12 = lazy_unwrap$1(x, () => {
@@ -3536,7 +3460,7 @@ function update(model, msg) {
         return toArray(_pipe$1);
       })();
       return [
-        model.withFields({ to_do: new Some2(tasks) }),
+        model.withFields({ to_do: new Some(tasks) }),
         write_localstorage("kanban", added_tasks)
       ];
     } else if (kanban_block$1 === "in_progress") {
@@ -3550,8 +3474,8 @@ function update(model, msg) {
         });
       })();
       let added_tasks = (() => {
-        let _pipe = toList([model.to_do, new Some2(tasks), model.done]);
-        let _pipe$1 = map(
+        let _pipe = toList([model.to_do, new Some(tasks), model.done]);
+        let _pipe$1 = map$1(
           _pipe,
           (x) => {
             let _pipe$12 = lazy_unwrap$1(x, () => {
@@ -3563,7 +3487,7 @@ function update(model, msg) {
         return toArray(_pipe$1);
       })();
       return [
-        model.withFields({ in_progress: new Some2(tasks) }),
+        model.withFields({ in_progress: new Some(tasks) }),
         write_localstorage("in_progress", added_tasks)
       ];
     } else if (kanban_block$1 === "done") {
@@ -3577,8 +3501,8 @@ function update(model, msg) {
         });
       })();
       let added_tasks = (() => {
-        let _pipe = toList([model.to_do, model.in_progress, new Some2(tasks)]);
-        let _pipe$1 = map(
+        let _pipe = toList([model.to_do, model.in_progress, new Some(tasks)]);
+        let _pipe$1 = map$1(
           _pipe,
           (x) => {
             let _pipe$12 = lazy_unwrap$1(x, () => {
@@ -3590,23 +3514,23 @@ function update(model, msg) {
         return toArray(_pipe$1);
       })();
       return [
-        model.withFields({ done: new Some2(tasks) }),
+        model.withFields({ done: new Some(tasks) }),
         write_localstorage("done", added_tasks)
       ];
     } else {
-      return [model, none()];
+      return [model, none$1()];
     }
   } else {
     let kanban_block$1 = msg[0];
     if (kanban_block$1 === "todo") {
       let $ = model.new_task_input;
       if ($ === "") {
-        return [model, none()];
+        return [model, none$1()];
       } else {
         let t = $;
         return [
           model.withFields({
-            to_do: new Some2(
+            to_do: new Some(
               prepend$1(
                 t,
                 (() => {
@@ -3626,7 +3550,7 @@ function update(model, msg) {
             "kanban",
             (() => {
               let _pipe = toList([
-                new Some2(
+                new Some(
                   prepend$1(
                     t,
                     (() => {
@@ -3643,7 +3567,7 @@ function update(model, msg) {
                 model.in_progress,
                 model.done
               ]);
-              let _pipe$1 = map(
+              let _pipe$1 = map$1(
                 _pipe,
                 (x) => {
                   let _pipe$12 = lazy_unwrap$1(
@@ -3663,12 +3587,12 @@ function update(model, msg) {
     } else if (kanban_block$1 === "in_progress") {
       let $ = model.new_task_input;
       if ($ === "") {
-        return [model, none()];
+        return [model, none$1()];
       } else {
         let t = $;
         return [
           model.withFields({
-            in_progress: new Some2(
+            in_progress: new Some(
               prepend$1(
                 t,
                 (() => {
@@ -3689,7 +3613,7 @@ function update(model, msg) {
             (() => {
               let _pipe = toList([
                 model.to_do,
-                new Some2(
+                new Some(
                   prepend$1(
                     t,
                     (() => {
@@ -3705,7 +3629,7 @@ function update(model, msg) {
                 ),
                 model.done
               ]);
-              let _pipe$1 = map(
+              let _pipe$1 = map$1(
                 _pipe,
                 (x) => {
                   let _pipe$12 = lazy_unwrap$1(
@@ -3725,12 +3649,12 @@ function update(model, msg) {
     } else if (kanban_block$1 === "done") {
       let $ = model.new_task_input;
       if ($ === "") {
-        return [model, none()];
+        return [model, none$1()];
       } else {
         let t = $;
         return [
           model.withFields({
-            done: new Some2(
+            done: new Some(
               prepend$1(
                 t,
                 (() => {
@@ -3752,7 +3676,7 @@ function update(model, msg) {
               let _pipe = toList([
                 model.to_do,
                 model.in_progress,
-                new Some2(
+                new Some(
                   prepend$1(
                     t,
                     (() => {
@@ -3767,7 +3691,7 @@ function update(model, msg) {
                   )
                 )
               ]);
-              let _pipe$1 = map(
+              let _pipe$1 = map$1(
                 _pipe,
                 (x) => {
                   let _pipe$12 = lazy_unwrap$1(
@@ -3785,7 +3709,7 @@ function update(model, msg) {
         ];
       }
     } else {
-      return [model, none()];
+      return [model, none$1()];
     }
   }
 }
@@ -3998,7 +3922,7 @@ function view(model) {
                           return toList([]);
                         }
                       );
-                      return map(
+                      return map$1(
                         _pipe$1,
                         (task_item) => {
                           return div(
@@ -4058,7 +3982,7 @@ function view(model) {
                           return toList([]);
                         }
                       );
-                      return map(
+                      return map$1(
                         _pipe$1,
                         (task_item) => {
                           return div(
@@ -4118,7 +4042,7 @@ function view(model) {
                           return toList([]);
                         }
                       );
-                      return map(
+                      return map$1(
                         _pipe$1,
                         (task_item) => {
                           return div(
