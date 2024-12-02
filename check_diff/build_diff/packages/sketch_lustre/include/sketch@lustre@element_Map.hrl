@@ -1,0 +1,1 @@
+-record(map, {subtree :: fun(() -> sketch@lustre@element:element(any()))}).

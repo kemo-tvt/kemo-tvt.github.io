@@ -1,0 +1,1 @@
+-record(options, {stylesheet :: sketch@lustre:style_sheet_option()}).

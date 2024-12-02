@@ -1,0 +1,1 @@
+-record(class_name, {class_name :: sketch@internals@style:class()}).

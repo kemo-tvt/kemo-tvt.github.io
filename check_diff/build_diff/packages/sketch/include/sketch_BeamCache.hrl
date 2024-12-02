@@ -1,0 +1,1 @@
+-record(beam_cache, {cache :: sketch@internals@cache@setup:cache()}).

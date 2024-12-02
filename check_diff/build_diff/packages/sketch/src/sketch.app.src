@@ -1,0 +1,19 @@
+{application, sketch, [
+    {vsn, "3.1.2"},
+    {applications, [gleam_erlang,
+                    gleam_otp,
+                    gleam_stdlib]},
+    {description, "A CSS-in-Gleam package, foundation for CSS packages!"},
+    {modules, [sketch,
+               sketch@angle,
+               sketch@error,
+               sketch@internals@cache@setup,
+               sketch@internals@cache@state,
+               sketch@internals@class,
+               sketch@internals@string,
+               sketch@internals@style,
+               sketch@media,
+               sketch@size,
+               sketch@transform]},
+    {registered, []}
+]}.

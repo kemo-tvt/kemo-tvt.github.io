@@ -1,0 +1,1 @@
+-record(property, {key :: binary(), value :: binary(), important :: boolean()}).
