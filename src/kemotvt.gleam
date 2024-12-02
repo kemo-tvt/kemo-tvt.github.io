@@ -1,4 +1,4 @@
-import gleam/javascript
+import gleam/dynamic
 import gleam/javascript/array.{type Array}
 import gleam/list
 import gleam/option.{type Option, None, Some}
@@ -30,7 +30,7 @@ type Model {
     in_progress: Option(List(String)),
     done: Option(List(String)),
     new_task_input: String,
-    // Holds the value of the new task being typed
+    // text_editor_content: String,
   )
 }
 
@@ -63,6 +63,7 @@ fn init(_flags) -> #(Model, Effect(Msg)) {
       in_progress: Some([]),
       done: Some([]),
       new_task_input: "",
+      // text_editor_content: "<h1>hello</h1>",
     ),
     read_localstorage("kanban"),
   )
@@ -75,10 +76,23 @@ pub opaque type Msg {
   AddTask(String)
   DeleteTask(String, String)
   CacheUpdatedMessage(Result(Array(Array(String)), Nil))
+  // UserUpdatedContent(String)
 }
 
 fn update(model: Model, msg: Msg) {
   case msg {
+    // UserUpdatedContent(value) -> #(
+    //   Model(..model, text_editor_content: value),
+    //   write_localstorage(
+    //     "kanban",
+    //     [model.to_do, model.in_progress, model.done, Some([value])]
+    //       |> list.map(fn(x) {
+    //         option.lazy_unwrap(x, fn() { [""] })
+    //         |> array.from_list
+    //       })
+    //       |> array.from_list,
+    //   ),
+    // )
     CacheUpdatedMessage(Ok(kanban)) -> #(
       Model(
         ..model,
@@ -100,6 +114,12 @@ fn update(model: Model, msg: Msg) {
           |> result.lazy_unwrap(fn() { array.from_list([]) })
           |> array.to_list,
         ),
+        // text_editor_content: kanban
+        //   |> array.get(3)
+        //   |> result.lazy_unwrap(fn() { array.from_list([]) })
+        //   |> array.to_list
+        //   |> list.first
+        //   |> result.lazy_unwrap(fn() { "" }),
       ),
       effect.none(),
     )
@@ -410,6 +430,18 @@ fn add_task_input() {
   ])
 }
 
+// fn tiptap() {
+//   sketch.class([
+//     sketch.background_color("#F7F7F7"),
+//     sketch.border("0.1rem solid #ccc"),
+//     sketch.border_radius(size.rem(0.4)),
+//     sketch.padding(size.rem(0.8)),
+//     sketch.margin_("0.5rem 0"),
+//     sketch.box_shadow("0 1px 3px rgba(0,0,0,0.1)"),
+//     sketch.font_size(size.rem(1.5)),
+//   ])
+// }
+
 fn add_task_button() {
   sketch.class([
     sketch.background_color("#4B8F6A"),
@@ -462,6 +494,15 @@ fn delete_task_button() {
 }
 
 fn view(model: Model) {
+  // let content_updated = fn(event) -> Result(Msg, List(dynamic.DecodeError)) {
+  //   use detail <- result.try(dynamic.field("detail", dynamic.dynamic)(event))
+  //   use value <- result.try(dynamic.field("content", dynamic.string)(detail))
+
+  //   // let loud = string.uppercase(value)
+
+  //   Ok(UserUpdatedContent(value))
+  // }
+
   html.div(container(), [], [
     html.div(kanban_board_container(), [], [
       html.div(kanban_board(), [], [
@@ -544,5 +585,14 @@ fn view(model: Model) {
         ]),
       ]),
     ]),
+    // element.element(
+  //   "tiptap-editor",
+  //   tiptap(),
+  //   [
+  //     attribute.attribute("content", model.text_editor_content),
+  //     event.on("content-update", content_updated),
+  //   ],
+  //   [],
+  // ),
   ])
 }

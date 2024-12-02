@@ -20,9 +20,23 @@ export class TiptapEditor extends HTMLElement {
 
         // Initialize Tiptap editor when the element is connected to the DOM
         this.editor = new Editor({
+            onUpdate: ({ editor }) => {
+                // Dispatch an update event whenever the content changes
+                console.log(editor.getHTML())
+                this.dispatchEvent(
+                    new CustomEvent('content-update', {
+                        detail: {
+                            content: editor.getHTML(),
+                        },
+                        bubbles: true, // Allows the event to bubble up the DOM
+                        composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+                    })
+                );
+            },
+
             element: this.editorContainer,
             extensions: [StarterKit],
-            content: this.getAttribute('content') || '', // Initial content from the attribute or empty
+            content: this.getAttribute('content') || '<p>hey</p>', // Initial content from the attribute or empty
         });
     }
 
@@ -45,3 +59,4 @@ export class TiptapEditor extends HTMLElement {
 }
 
 // Define the custom element
+
