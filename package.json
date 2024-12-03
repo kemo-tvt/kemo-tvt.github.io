@@ -8,9 +8,11 @@
     "@tiptap/pm": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",
     "vite": "^6.0.0",
-    "vite-gleam": "^0.4.3"
+    "vite-gleam": "^0.4.3",
+    "partysocket": "1.0.2"
   },
   "devDependencies": {
-    "vite-plugin-pwa": "^0.21.0"
+    "vite-plugin-pwa": "^0.21.0",
+    "partykit": "0.0.111"
   }
 }

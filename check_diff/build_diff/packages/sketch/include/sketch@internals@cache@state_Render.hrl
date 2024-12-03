@@ -1,1 +1,0 @@
--record(render, {stylesheet :: gleam@erlang@process:subject(binary())}).

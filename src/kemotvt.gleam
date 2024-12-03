@@ -76,23 +76,29 @@ pub opaque type Msg {
   AddTask(String)
   DeleteTask(String, String)
   CacheUpdatedMessage(Result(Array(Array(String)), Nil))
-  // UserUpdatedContent(String)
+  UserUpdatedContent(List(String), List(String), List(String))
 }
 
 fn update(model: Model, msg: Msg) {
   case msg {
-    // UserUpdatedContent(value) -> #(
-    //   Model(..model, text_editor_content: value),
-    //   write_localstorage(
-    //     "kanban",
-    //     [model.to_do, model.in_progress, model.done, Some([value])]
-    //       |> list.map(fn(x) {
-    //         option.lazy_unwrap(x, fn() { [""] })
-    //         |> array.from_list
-    //       })
-    //       |> array.from_list,
-    //   ),
-    // )
+    UserUpdatedContent(to_do, in_progress, done) -> #(
+      Model(
+        ..model,
+        to_do: Some(to_do),
+        in_progress: Some(in_progress),
+        done: Some(done),
+      ),
+      effect.none(),
+      // write_localstorage(
+    //   "kanban",
+    //   [Some(to_do), Some(in_progress), Some(done)]
+    //     |> list.map(fn(x) {
+    //       option.lazy_unwrap(x, fn() { [""] })
+    //       |> array.from_list
+    //     })
+    //     |> array.from_list,
+    // ),
+    )
     CacheUpdatedMessage(Ok(kanban)) -> #(
       Model(
         ..model,
@@ -114,12 +120,6 @@ fn update(model: Model, msg: Msg) {
           |> result.lazy_unwrap(fn() { array.from_list([]) })
           |> array.to_list,
         ),
-        // text_editor_content: kanban
-        //   |> array.get(3)
-        //   |> result.lazy_unwrap(fn() { array.from_list([]) })
-        //   |> array.to_list
-        //   |> list.first
-        //   |> result.lazy_unwrap(fn() { "" }),
       ),
       effect.none(),
     )
@@ -494,105 +494,121 @@ fn delete_task_button() {
 }
 
 fn view(model: Model) {
-  // let content_updated = fn(event) -> Result(Msg, List(dynamic.DecodeError)) {
-  //   use detail <- result.try(dynamic.field("detail", dynamic.dynamic)(event))
-  //   use value <- result.try(dynamic.field("content", dynamic.string)(detail))
+  let content_updated = fn(event) -> Result(Msg, List(dynamic.DecodeError)) {
+    use detail <- result.try(dynamic.field("detail", dynamic.dynamic)(event))
+    use to_do <- result.try(dynamic.field("to_do", dynamic.list(dynamic.string))(
+      detail,
+    ))
+    use in_progress <- result.try(dynamic.field(
+      "in_progress",
+      dynamic.list(dynamic.string),
+    )(detail))
+    use done <- result.try(dynamic.field("done", dynamic.list(dynamic.string))(
+      detail,
+    ))
 
-  //   // let loud = string.uppercase(value)
+    // let loud = string.uppercase(value)
 
-  //   Ok(UserUpdatedContent(value))
-  // }
+    Ok(UserUpdatedContent(to_do, in_progress, done))
+  }
 
-  html.div(container(), [], [
-    html.div(kanban_board_container(), [], [
-      html.div(kanban_board(), [], [
-        html.div(kanban_block(), [], [
-          html.div(block_title(), [], [html.text("To Do")]),
-          html.input(add_task_input(), [
-            attribute.type_("text"),
-            attribute.value(model.new_task_input),
-            event.on_input(UpdateNewTask),
+  html.div(
+    container(),
+    [
+      attribute.id("websocket_element"),
+      event.on("content-updated", content_updated),
+    ],
+    [
+      html.div(kanban_board_container(), [], [
+        html.div(kanban_board(), [], [
+          html.div(kanban_block(), [], [
+            html.div(block_title(), [], [html.text("To Do")]),
+            html.input(add_task_input(), [
+              attribute.type_("text"),
+              attribute.value(model.new_task_input),
+              event.on_input(UpdateNewTask),
+            ]),
+            html.button(add_task_button(), [event.on_click(AddTask("todo"))], [
+              html.text("Add Task"),
+            ]),
+            element.fragment(
+              model.to_do
+              |> option.lazy_unwrap(fn() { [] })
+              |> list.map(fn(task_item) {
+                html.div(task(), [], [
+                  html.text(task_item),
+                  html.button(
+                    delete_task_button(),
+                    [event.on_click(DeleteTask("todo", task_item))],
+                    [html.text("X")],
+                  ),
+                ])
+              }),
+            ),
           ]),
-          html.button(add_task_button(), [event.on_click(AddTask("todo"))], [
-            html.text("Add Task"),
+          html.div(kanban_block(), [], [
+            html.div(block_title(), [], [html.text("In Progress")]),
+            html.input(add_task_input(), [
+              attribute.type_("text"),
+              attribute.value(model.new_task_input),
+              event.on_input(UpdateNewTask),
+            ]),
+            html.button(
+              add_task_button(),
+              [event.on_click(AddTask("in_progress"))],
+              [html.text("Add Task")],
+            ),
+            element.fragment(
+              model.in_progress
+              |> option.lazy_unwrap(fn() { [] })
+              |> list.map(fn(task_item) {
+                html.div(task(), [], [
+                  html.text(task_item),
+                  html.button(
+                    delete_task_button(),
+                    [event.on_click(DeleteTask("in_progress", task_item))],
+                    [html.text("X")],
+                  ),
+                ])
+              }),
+            ),
           ]),
-          element.fragment(
-            model.to_do
-            |> option.lazy_unwrap(fn() { [] })
-            |> list.map(fn(task_item) {
-              html.div(task(), [], [
-                html.text(task_item),
-                html.button(
-                  delete_task_button(),
-                  [event.on_click(DeleteTask("todo", task_item))],
-                  [html.text("X")],
-                ),
-              ])
-            }),
-          ),
-        ]),
-        html.div(kanban_block(), [], [
-          html.div(block_title(), [], [html.text("In Progress")]),
-          html.input(add_task_input(), [
-            attribute.type_("text"),
-            attribute.value(model.new_task_input),
-            event.on_input(UpdateNewTask),
+          html.div(kanban_block(), [], [
+            html.div(block_title(), [], [html.text("Done")]),
+            html.input(add_task_input(), [
+              attribute.type_("text"),
+              attribute.value(model.new_task_input),
+              event.on_input(UpdateNewTask),
+            ]),
+            html.button(add_task_button(), [event.on_click(AddTask("done"))], [
+              html.text("Add Task"),
+            ]),
+            element.fragment(
+              model.done
+              |> option.lazy_unwrap(fn() { [] })
+              |> list.map(fn(task_item) {
+                html.div(task(), [], [
+                  html.text(task_item),
+                  html.button(
+                    delete_task_button(),
+                    [event.on_click(DeleteTask("done", task_item))],
+                    [html.text("X")],
+                  ),
+                ])
+              }),
+            ),
           ]),
-          html.button(
-            add_task_button(),
-            [event.on_click(AddTask("in_progress"))],
-            [html.text("Add Task")],
-          ),
-          element.fragment(
-            model.in_progress
-            |> option.lazy_unwrap(fn() { [] })
-            |> list.map(fn(task_item) {
-              html.div(task(), [], [
-                html.text(task_item),
-                html.button(
-                  delete_task_button(),
-                  [event.on_click(DeleteTask("in_progress", task_item))],
-                  [html.text("X")],
-                ),
-              ])
-            }),
-          ),
-        ]),
-        html.div(kanban_block(), [], [
-          html.div(block_title(), [], [html.text("Done")]),
-          html.input(add_task_input(), [
-            attribute.type_("text"),
-            attribute.value(model.new_task_input),
-            event.on_input(UpdateNewTask),
-          ]),
-          html.button(add_task_button(), [event.on_click(AddTask("done"))], [
-            html.text("Add Task"),
-          ]),
-          element.fragment(
-            model.done
-            |> option.lazy_unwrap(fn() { [] })
-            |> list.map(fn(task_item) {
-              html.div(task(), [], [
-                html.text(task_item),
-                html.button(
-                  delete_task_button(),
-                  [event.on_click(DeleteTask("done", task_item))],
-                  [html.text("X")],
-                ),
-              ])
-            }),
-          ),
         ]),
       ]),
-    ]),
-    // element.element(
-  //   "tiptap-editor",
-  //   tiptap(),
-  //   [
-  //     attribute.attribute("content", model.text_editor_content),
-  //     event.on("content-update", content_updated),
-  //   ],
-  //   [],
-  // ),
-  ])
+      // element.element(
+    //   "tiptap-editor",
+    //   tiptap(),
+    //   [
+    //     attribute.attribute("content", model.text_editor_content),
+    //     event.on("content-update", content_updated),
+    //   ],
+    //   [],
+    // ),
+    ],
+  )
 }

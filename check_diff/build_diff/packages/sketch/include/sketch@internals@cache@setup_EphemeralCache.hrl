@@ -1,1 +1,0 @@
--record(ephemeral_cache, {cache :: sketch@internals@style:cache()}).
